@@ -8,7 +8,7 @@ class Bot(commands.Bot):
 
     def __init__(self):
 
-        super().__init__(token='oauth:r4gdclfkszuzaie1gixyly33u82b1l', prefix='?', initial_channels=['ankur23'])
+        super().__init__(token='', prefix='?', initial_channels=['ankur23'])
         global loaded_model
         loaded_model = pickle.load(open('rf300_4.pki', 'rb'))
     async def event_ready(self):
