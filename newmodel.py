@@ -3,7 +3,8 @@ import pandas as pd
 import re
 from sklearn.feature_extraction.text import HashingVectorizer
 import pandas as pd
-from xgboost import XGBClassifier
+import pickle
+from sklearn.ensemble import RandomForestClassifier
 from collections import Counter
 import itertools
 import tldextract
@@ -11,7 +12,7 @@ from urllib.parse import urlparse
 from tld import get_tld
 import os.path
 
-def predict(urlIn):
+def predict(urlIn ,loaded_model):
     def getTokens(input):
         tokensBySlash = str(input.encode('utf-8')).split('/')
         allTokens = []
@@ -27,7 +28,7 @@ def predict(urlIn):
             allTokens.remove('com')
         return allTokens
 
-    encoder = HashingVectorizer(n_features=1000, ngram_range=(3, 3), tokenizer=getTokens)
+    encoder = HashingVectorizer(n_features=300, ngram_range=(1, 4), tokenizer=getTokens)
     test = encoder.fit_transform([urlIn])
     numpyArray = test.toarray()
     panda_df = pd.DataFrame(data=numpyArray[0:, 0:],
@@ -85,7 +86,7 @@ def predict(urlIn):
         urldir = urlparse(url).path
         return urldir.count('//')
 
-    def no_of_embed(url):
+    def no_of_embed1(url):
         urldir = urlparse(url).path
         return urldir.count('%20')
 
@@ -107,14 +108,15 @@ def predict(urlIn):
     df['subdomain'] = df['url'].apply(lambda i: tldextract.extract(i).subdomain.count('.'))
     df['count_dir'] = df['url'].apply(lambda i: no_of_dir(i))
     df['count_embed_domian'] = df['url'].apply(lambda i: no_of_embed(i))
-    df['count_20'] = df['url'].apply(lambda i: no_of_embed(i))
+    df['count_20'] = df['url'].apply(lambda i: no_of_embed1(i))
     df['count_spchar'] = df['url'].apply(lambda i: spchar(i))
     df['count_query'] = df['url'].apply(lambda i: len(urlparse(i).query))
     new_df = df.drop(['url', 'tld'], axis=1)
     new_df.reset_index(drop=True, inplace=True)
     panda_df.reset_index(drop=True, inplace=True)
     test_features = pd.concat([panda_df, new_df], axis=1)
-    classifier = XGBClassifier(tree_method='gpu_hist')
-    classifier.load_model('model_file_name.bin')
-    y_predl = classifier.predict(test_features)
+#    classifier = XGBClassifier(tree_method='gpu_hist')
+#    classifier.load_model('model_file_name.bin')
+#    loaded_model = pickle.load(open('rf300_4.pki', 'rb'))
+    y_predl = loaded_model.predict(test_features)
     return y_predl[0]
