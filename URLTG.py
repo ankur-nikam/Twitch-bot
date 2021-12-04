@@ -1,15 +1,16 @@
 from twitchio.ext import commands
 import regex as re
 import requests
+import pickle
+from sklearn.ensemble import RandomForestClassifier
 import newmodel
 class Bot(commands.Bot):
 
     def __init__(self):
-        # Initialise our Bot with our access token, prefix and a list of channels to join on boot...
-        # prefix can be a callable, which returns a list of strings or a string...
-        # initial_channels can also be a callable which returns a list of strings...
-        super().__init__(token='', prefix='?', initial_channels=['ankur23'])
 
+        super().__init__(token='oauth:r4gdclfkszuzaie1gixyly33u82b1l', prefix='?', initial_channels=['ankur23'])
+        global loaded_model
+        loaded_model = pickle.load(open('rf300_4.pki', 'rb'))
     async def event_ready(self):
         # Notify us when everything is ready!
         # We are logged in and ready to chat and use commands...
@@ -29,9 +30,10 @@ class Bot(commands.Bot):
 
 #                response =  requests.get(x[0] ,verify=False)
 #                finalurl=response.url
-                if newmodel.predict(x[0]) == 1:
+                if newmodel.predict(x[0],loaded_model) == 1:
                     message_id = message.tags['id']
                     await message.channel.send(f"/delete {message_id}")
+                    print(x[0] + " is Malicious ")
                 else:
                     print(x[0]+" is safe")
         # Since we have commands and are overriding the default `event_message`
