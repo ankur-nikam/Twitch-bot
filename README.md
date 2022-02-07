@@ -7,7 +7,7 @@ but your twitch account oauth token in line 11 of URLTG.py. you can get token fr
 
     def __init__(self):
 
-        super().__init__(token='', prefix='?', initial_channels=['ankur23'])
+        super().__init__(token='', prefix='?', initial_channels=['#channel_name'])
         
         
 ## install required Library
