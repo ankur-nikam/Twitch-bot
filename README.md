@@ -3,7 +3,7 @@ detect malicious urls in twitch chat and delete those messages using machine lea
 
 unzip  rf300_4.zip
 
-but your twitch account oauth token in line 11 of URLTG.py. you get token from https://twitchapps.com/tokengen/ 
+but your twitch account oauth token in line 11 of URLTG.py. you can get token from https://twitchapps.com/tokengen/ 
 
     def __init__(self):
 
